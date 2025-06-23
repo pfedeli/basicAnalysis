@@ -1,0 +1,1 @@
+sshfs -o ro pfedeli@lxplus.cern.ch:/eos/project/i/insulab-como/testBeam/TB_2025_06_T9_epBOOST /home/pierluigi/tmpmount
