@@ -17,6 +17,7 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
     std::cout << "[Run::FillSpillsFromASCII] Caricamento run " << run_id << " da config: " << configPath << std::endl;
 
     nevt_ = 0; // azzera il contatore eventi
+    totalPassed_=0;//
 
     Config config;
     if (!config.Load(configPath)) {
@@ -54,11 +55,11 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
             std::cerr << "[Run::FillSpillsFromASCII] Errore nella lettura di " << file << std::endl;
             continue;
         }
-
         nevt_ += spill.GetNEvents();
+        totalPassed_ += spill.GetTotalEvts();
         run_.push_back(spill);
     }
 
-    std::cout << "[Run::FillSpillsFromASCII] Completato. Totale spill caricati: " << run_.size() << " Totale eventi nella run: " << nevt_ << std::endl;
+    std::cout << "[Run::FillSpillsFromASCII] Completato. Totale spill caricati: " << run_.size() << " Eventi cut/total: " << totalPassed_ <<"/"<<nevt_ <<" = "<< float(totalPassed_) / float(nevt_)*100 <<"%"<< std::endl;
     return true;
 }

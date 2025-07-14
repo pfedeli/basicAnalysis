@@ -26,6 +26,7 @@ public:
 private:
     std::vector<Spill> run_;  // Contenitore per tutti gli spill della run
     int nevt_=0;
+    int totalPassed_=0;
 };
 
 #endif // RUN_HH

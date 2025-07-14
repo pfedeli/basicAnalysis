@@ -69,7 +69,7 @@ bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
     if (cut_y_active_)
         poscuts = poscuts && (y > cut_y1_ && y < cut_y2_);
     if (ene_cut_active_)
-        CHenecuts = (eneCH > ene_cut_);
+        CHenecuts = (eneCH >= ene_cut_);
     if (cut_eneLG_active_)
         ENELG = (eneLG > cut_eneLG_);
     if (theta_crit_active_)
