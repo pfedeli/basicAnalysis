@@ -13,6 +13,17 @@ public:
 
     bool PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
                    int eneLG, double theta, double CHtime, double LGtime) const;
+    double GetCutVal(const std::string& val) const {
+        if (val == "timecut") return timecut_;
+        if (val == "theta_crit") return theta_crit_;
+        if (val == "cut_eneLG") return cut_eneLG_;
+        if (val == "ene_cut") return ene_cut_;
+        if (val == "cut_x1") return cut_x1_;
+        if (val == "cut_x2") return cut_x2_;
+        if (val == "cut_y1") return cut_y1_;
+        if (val == "cut_y2") return cut_y2_;
+        throw std::invalid_argument("Unknown cut value requested: " + val);
+    }
 
 private:
     double cut_x1_, cut_x2_;
@@ -31,6 +42,9 @@ private:
     bool cut_eneLG_active_;
 
     bool clucut_active_;
+
+    double timecut_;
+    bool timecut_active_;
 };
 
 #endif

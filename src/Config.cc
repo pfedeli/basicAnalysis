@@ -5,14 +5,15 @@
 #include <vector>
 
 bool Config::Load(const std::string& filename) {
+    bool debug = false;
     std::ifstream file(filename);
     if (!file.is_open()) {
-        //std::cerr << "Errore: impossibile aprire config " << filename << std::endl;
+        std::cerr << "Errore: impossibile aprire config " << filename << std::endl;
         return false;
     }
 
     std::string line;
-    //std::cout << "[Config::Load] Inizio caricamento da file: " << filename << std::endl;
+    if(debug) std::cout << "[Config::Load] Inizio caricamento da file: " << filename << std::endl;
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') continue;
 
@@ -20,10 +21,10 @@ bool Config::Load(const std::string& filename) {
         std::string key, value;
         if (std::getline(iss, key, '=') && std::getline(iss, value)) {
             configMap_[key] = value;
-            //std::cout << "[Config::Load] Chiave: '" << key << "' Valore: '" << value << "'" << std::endl;
+            if(debug) std::cout << "[Config::Load] Chiave: '" << key << "' Valore: '" << value << "'" << std::endl;
         }
     }
-    //std::cout << "[Config::Load] Caricamento completato con " << configMap_.size() << " coppie chiave-valore." << std::endl;
+    if(debug) std::cout << "[Config::Load] Caricamento completato con " << configMap_.size() << " coppie chiave-valore." << std::endl;
     return true;
 }
 

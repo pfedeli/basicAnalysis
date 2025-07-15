@@ -2,12 +2,12 @@
 #include <iostream>
 
 Cut::Cut()
-    : cut_x1_(0), cut_x2_(0), cut_x_active_(false),
-      cut_y1_(0), cut_y2_(0), cut_y_active_(false),
+    : cut_x1_(0), cut_x2_(10), cut_x_active_(false),
+      cut_y1_(0), cut_y2_(10), cut_y_active_(false),
       ene_cut_(0), ene_cut_active_(false),
-      theta_crit_(0), theta_crit_active_(false),
+      theta_crit_(100), theta_crit_active_(false),
       cut_eneLG_(0), cut_eneLG_active_(false),
-      clucut_active_(false)
+      clucut_active_(false), timecut_(10000), timecut_active_(false)
 {}
 
 Cut::~Cut() {}
@@ -51,6 +51,11 @@ bool Cut::LoadFromConfig(const std::string& configPath)
         clucut_active_ = (config.GetInt("clucut_active", 0) != 0);
     }
 
+    if (config.HasKey("timecut")) {
+        timecut_ = config.GetDouble("timecut");
+        timecut_active_ = true;
+    } 
+
     return true;
 }
 
@@ -61,7 +66,7 @@ bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
     bool CHenecuts = true;
     bool singleclucut = true;
     bool ENELG = true;
-    bool timecut = (LGtime - CHtime) < 40 && (LGtime - CHtime) > 0;
+    bool timecut = true;
     bool thcut = true;
 
     if (cut_x_active_)
@@ -76,6 +81,8 @@ bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
         thcut = (theta < 2 * theta_crit_) && (theta > -2 * theta_crit_);
     if (clucut_active_)
         singleclucut = (nclusx == 1 && nclusy == 1);
-
+    if (timecut_active_)
+        timecut = (LGtime - CHtime) < timecut_ && (LGtime - CHtime) > 0;
+    
     return (poscuts && CHenecuts && singleclucut && timecut && thcut && ENELG);
 }

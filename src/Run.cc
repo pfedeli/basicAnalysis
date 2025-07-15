@@ -14,10 +14,8 @@ Run::~Run() {}
 
 bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& configPath)
 {
-    std::cout << "[Run::FillSpillsFromASCII] Caricamento run " << run_id << " da config: " << configPath << std::endl;
-
-    nevt_ = 0; // azzera il contatore eventi
-    totalPassed_=0;//
+    bool debug = true;
+    if(debug) std::cout << "[Run::FillSpillsFromASCII] Caricamento run " << run_id << " da config: " << configPath << std::endl;
 
     Config config;
     if (!config.Load(configPath)) {
@@ -27,7 +25,7 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
     std::cout << "[Run::FillSpillsFromASCII] Config caricata correttamente\n";
 
     std::string directory = config.GetString("run_dir", ".");
-    std::cout << "[Run::FillSpillsFromASCII] Directory: " << directory << std::endl;
+    if(debug) std::cout << "[Run::FillSpillsFromASCII] Directory: " << directory << std::endl;
 
     std::regex pattern("run" + run_id + "_\\d{6}\\.dat");
     std::vector<fs::path> files_to_read;
@@ -40,7 +38,7 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
             files_to_read.push_back(entry.path());
         }
     }
-    std::cout << "[Run::FillSpillsFromASCII] Trovati " << files_to_read.size() << " file\n";
+    if(debug) std::cout << "[Run::FillSpillsFromASCII] Trovati " << files_to_read.size() << " file\n";
 
     if (files_to_read.empty())
     {
@@ -55,11 +53,11 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
             std::cerr << "[Run::FillSpillsFromASCII] Errore nella lettura di " << file << std::endl;
             continue;
         }
-        nevt_ += spill.GetNEvents();
-        totalPassed_ += spill.GetTotalEvts();
+        totalPassed_ += spill.GetNEvents();
+        nevt_+= spill.GetTotalEvts();
         run_.push_back(spill);
     }
 
-    std::cout << "[Run::FillSpillsFromASCII] Completato. Totale spill caricati: " << run_.size() << " Eventi cut/total: " << totalPassed_ <<"/"<<nevt_ <<" = "<< float(totalPassed_) / float(nevt_)*100 <<"%"<< std::endl;
+    if(debug) std::cout << "[Run::FillSpillsFromASCII] Completato. Totale spill caricati: " << run_.size() << " Eventi cut/total: " << totalPassed_ <<"/"<<nevt_ <<" = "<< float(totalPassed_) / float(nevt_)*100 <<"%"<< std::endl;
     return true;
 }

@@ -16,12 +16,11 @@ int main(int argc, char** argv)
     }
 
     // Ad esempio: numero totale di spill
-    size_t totalSpills = 0;
-    for (const auto& run : allRuns.GetRuns()) {
-        totalSpills += run.GetSpills().size();
-    }
+    // size_t totalSpills = 0;
+    // for (const auto& run : allRuns.GetRuns()) {//segmentaation fault
+    //     totalSpills += run.GetSpills().size(); //segmentaation fault
+    // }
 
-    std::cout << "Totale spill caricati: " << totalSpills << std::endl;
-
+    // std::cout << "Totale spill caricati: " << totalSpills << std::endl; 
     return 0;
 }

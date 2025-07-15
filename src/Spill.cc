@@ -13,24 +13,24 @@ Spill::~Spill() {}
 
 bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &configPath)
 {
-    const bool debug = true;  // <<< Cambia in false per disabilitare le stampe
+    const bool debug = false;  // <<< Cambia in false per disabilitare le stampe
+    totalEvts_=0;
 
-    if (debug) std::cout << "Loading config from: " << configPath << std::endl;
+    if (debug) std::cout << "[Spill::LoadFromASCII] Loading config from: " << configPath << std::endl;
 
     Config config;
     if (!config.Load(configPath))
     {
-        std::cerr << "Errore nella lettura del file di configurazione.\n";
+        std::cerr << "[Spill::LoadFromASCII] Errore nella lettura del file di configurazione.\n";
         return false;
     }
 
     Cut cut;
     if (!cut.LoadFromConfig(configPath))
     {
-        std::cerr << "Errore nel caricamento dei cut dal config.\n";
+        std::cerr << "[Spill::LoadFromASCII] Errore nel caricamento dei cut dal config.\n";
         return false;
     }
-
     int nstrips = config.GetInt("nstrips");
     int nclu = config.GetInt("nclu");
     int nqtot = config.GetInt("nqtot");
@@ -43,7 +43,7 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
 
     if (debug)
     {
-        std::cout << "Config parameters loaded:\n"
+        std::cout << "[Spill::LoadFromASCII] Config parameters loaded:\n"
                   << "nstrips=" << nstrips << ", nclu=" << nclu << ", nqtot=" << nqtot << "\n"
                   << "ndigi=" << ndigi << ", ngonio=" << ngonio << ", ninfoplus=" << ninfoplus << "\n"
                   << "SD1SD2_Z=" << SD1SD2_Z << ", SD1CRY_Z=" << SD1CRY_Z << ", CRYSD3_Z=" << CRYSD3_Z << std::endl;
@@ -56,7 +56,7 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
         return false;
     }
 
-    if (debug) std::cout << "Reading file: " << fileSpill << std::endl;
+    if (debug) std::cout << "[Spill::LoadFromASCII] Reading file: " << fileSpill << std::endl;
 
     std::string line;
     int lineCount = 0;
@@ -66,7 +66,7 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
             continue;
 
         lineCount++;
-        if (debug) std::cout << "\nParsing line " << lineCount << std::endl;
+        if (debug) std::cout << "\n[Spill::LoadFromASCII] Parsing line " << lineCount << std::endl;
 
         Event evt;
         std::istringstream iss(line);
@@ -178,7 +178,7 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
 
     if (debug)
     {
-        std::cout << "\nTotal events processed: " << totalEvts_
+        std::cout << "\n[Spill::LoadFromASCII] Total events processed: " << totalEvts_
                   << ", events passed cut: " << spill_.size() << std::endl;
     }
 
