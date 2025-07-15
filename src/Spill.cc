@@ -41,6 +41,10 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
     double SD1SD2_Z = config.GetDouble("SD1SD2_Z");
     double SD1CRY_Z = config.GetDouble("SD1CRY_Z");
     double CRYSD3_Z = config.GetDouble("CRYSD3_Z");
+    double SD1xcorr = config.GetDouble("SD1xcorr");
+    double SD1ycorr = config.GetDouble("SD1ycorr");
+    double SD3xcorr = config.GetDouble("SD3xcorr");
+    double SD3ycorr = config.GetDouble("SD3ycorr");
 
     if (debug)
     {
@@ -75,6 +79,11 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
         std::vector<double> pos(nstrips);
         for (int i = 0; i < nstrips; ++i)
             iss >> pos[i];
+        pos[0]-=SD1xcorr;
+        pos[1]-=SD1ycorr;
+        pos[4]-=SD3xcorr;
+        pos[5]-=SD3ycorr;
+
         evt.SetPos(pos);
         if (debug){
             std::cout << "Pos: ";
@@ -164,7 +173,7 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
         }
 
         if (cut.PassesCut(evt.GetXcry(), evt.GetYcry(), evt.GetPH()[0], evt.Getnclu()[0], evt.Getnclu()[1],
-                          evt.GetPH()[2], evt.GetThetaDeflection(), evt.Gettimes()[0], evt.Gettimes()[1]))
+                          evt.GetPH()[2], evt.GetThetaIn(), evt.Gettimes()[0], evt.Gettimes()[2]))
         {
             spill_.push_back(evt);
             hist.Fill(evt);

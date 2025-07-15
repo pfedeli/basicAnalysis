@@ -34,6 +34,10 @@ public:
         double dy = thetayout_ - thetayin_;
         return std::sqrt(dx * dx + dy * dy);
     }
+    double GetThetaIn() const
+    {
+        return std::sqrt(thetaxin_*thetaxin_ + thetayin_*thetayin_);
+    }
 
     // setter
     void SetPos(const std::vector<double> &pos) { pos_ = pos; }

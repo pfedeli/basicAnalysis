@@ -78,7 +78,7 @@ bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
     if (cut_eneLG_active_)
         ENELG = (eneLG > cut_eneLG_);
     if (theta_crit_active_)
-        thcut = (theta < 2 * theta_crit_) && (theta > -2 * theta_crit_);
+        thcut = (theta < 1 * theta_crit_) && (theta > -1 * theta_crit_);
     if (clucut_active_)
         singleclucut = (nclusx == 1 && nclusy == 1);
     if (timecut_active_)
