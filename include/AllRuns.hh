@@ -22,6 +22,8 @@ public:
 
 private:
     std::vector<Run> runs_;
+    int nevt_AR_=0;
+    int totalPassed_AR_=0;
 };
 
 #endif // ALLRUNS_HH

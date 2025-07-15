@@ -29,8 +29,11 @@ bool AllRuns::LoadAllFromASCII(const std::string& configPath)
             continue;
         }
         runs_.push_back(run);
+        nevt_AR_ += run.GetNEvents();
+        totalPassed_AR_ += run.GetNPassed();
     }
 
-    if(debug) std::cout << "[AllRuns::LoadAllFromASCII] Completato. Run caricate: " << runs_.size() << std::endl;
+    if(debug) std::cout << "[AllRuns::LoadAllFromASCII] Completato. Run caricate: " << runs_.size() << " Eventi passati: " << totalPassed_AR_
+                        <<  "/"<< nevt_AR_ << "=" << float(totalPassed_AR_)/float(nevt_AR_)*100 <<"%"<< std::endl;
     return true;
 }

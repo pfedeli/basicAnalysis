@@ -20,6 +20,7 @@ public:
     std::vector<Spill>& GetSpills() { return run_; }
     size_t GetNSpills() const { return run_.size(); }
     int GetNEvents() const { return nevt_;}
+    int GetNPassed() const { return totalPassed_;}
 
     // Eventuali altri metodi (analisi, salvataggio, etc.) possono essere aggiunti qui
 
