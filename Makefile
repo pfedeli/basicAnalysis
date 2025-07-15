@@ -1,6 +1,8 @@
 # Compilatore e flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
+ROOTCFLAGS := $(shell root-config --cflags)
+ROOTLIBS   := $(shell root-config --libs)
+CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude $(ROOTCFLAGS)
 
 # Cartelle
 SRC_DIR = src
@@ -19,7 +21,7 @@ all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(OBJ_DIR)

@@ -1,6 +1,7 @@
 #ifndef RUN_HH
 #define RUN_HH
 
+#include "Histograms.hh"
 #include "Spill.hh"
 #include "Config.hh"
 
@@ -13,7 +14,7 @@ public:
     ~Run();
 
     // Carica gli spill da file ASCII relativi a una singola run
-    bool FillSpillsFromASCII(const std::string& run_id, const std::string& configPath);
+    bool FillSpillsFromASCII(const std::string& run_id, const std::string& configPath, Histograms &hist);
 
     // Accesso agli spill
     const std::vector<Spill>& GetSpills() const { return run_; }

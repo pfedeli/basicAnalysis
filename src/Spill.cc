@@ -2,6 +2,7 @@
 #include "../include/Event.hh"
 #include "../include/Config.hh"
 #include "../include/Cut.hh"
+#include "../include/Histograms.hh"
 
 #include <fstream>
 #include <sstream>
@@ -11,7 +12,7 @@ Spill::Spill() {}
 
 Spill::~Spill() {}
 
-bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &configPath)
+bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &configPath, Histograms& hist)
 {
     const bool debug = false;  // <<< Cambia in false per disabilitare le stampe
     totalEvts_=0;
@@ -166,13 +167,13 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
                           evt.GetPH()[2], evt.GetThetaDeflection(), evt.Gettimes()[0], evt.Gettimes()[1]))
         {
             spill_.push_back(evt);
+            hist.Fill(evt);
             if (debug) std::cout << "Event accepted." << std::endl;
         }
         else
         {
             if (debug) std::cout << "Event rejected by cut." << std::endl;
         }
-
         totalEvts_++;
     }
 

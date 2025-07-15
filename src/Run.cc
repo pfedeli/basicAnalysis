@@ -12,9 +12,11 @@ namespace fs = std::filesystem;
 Run::Run() {}
 Run::~Run() {}
 
-bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& configPath)
+    bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& configPath, Histograms &hist)
 {
     bool debug = true;
+    size_t total_file_to_read =0;
+    int perc_completing=0;
     if(debug) std::cout << "[Run::FillSpillsFromASCII] Caricamento run " << run_id << " da config: " << configPath << std::endl;
 
     Config config;
@@ -38,7 +40,8 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
             files_to_read.push_back(entry.path());
         }
     }
-    if(debug) std::cout << "[Run::FillSpillsFromASCII] Trovati " << files_to_read.size() << " file\n";
+    total_file_to_read = files_to_read.size();
+    if(debug) std::cout << "[Run::FillSpillsFromASCII] Trovati " << total_file_to_read << " file\n";
 
     if (files_to_read.empty())
     {
@@ -49,13 +52,15 @@ bool Run::FillSpillsFromASCII(const std::string& run_id, const std::string& conf
     for (const auto& file : files_to_read)
     {
         Spill spill;
-        if (!spill.LoadFromASCII(file.string(), configPath)) {
+        if (!spill.LoadFromASCII(file.string(), configPath, hist)) {
             std::cerr << "[Run::FillSpillsFromASCII] Errore nella lettura di " << file << std::endl;
             continue;
         }
         totalPassed_ += spill.GetNEvents();
         nevt_+= spill.GetTotalEvts();
         run_.push_back(spill);
+        perc_completing++;
+        std::cout << "completing run at: " << perc_completing/float(total_file_to_read)*100.0 << "%" << std::endl;
     }
 
     if(debug) std::cout << "[Run::FillSpillsFromASCII] Completato. Totale spill caricati: " << run_.size() << " Eventi cut/total: " << totalPassed_ <<"/"<<nevt_ <<" = "<< float(totalPassed_) / float(nevt_)*100 <<"%"<< std::endl;

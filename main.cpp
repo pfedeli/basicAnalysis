@@ -1,5 +1,9 @@
 #include "../include/AllRuns.hh"
 
+#include <TCanvas.h>
+#include <TH1F.h>
+#include <TApplication.h>
+
 int main(int argc, char** argv)
 {
     if (argc < 2) {
@@ -8,19 +12,14 @@ int main(int argc, char** argv)
     }
 
     std::string configPath = argv[1];
-
+    TApplication app("app", &argc, argv);
     AllRuns allRuns;
     if (!allRuns.LoadAllFromASCII(configPath)) {
         std::cerr << "Errore durante il caricamento delle run." << std::endl;
         return 1;
     }
 
-    // Ad esempio: numero totale di spill
-    // size_t totalSpills = 0;
-    // for (const auto& run : allRuns.GetRuns()) {//segmentaation fault
-    //     totalSpills += run.GetSpills().size(); //segmentaation fault
-    // }
+    app.Run();
 
-    // std::cout << "Totale spill caricati: " << totalSpills << std::endl; 
     return 0;
 }

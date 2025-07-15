@@ -13,9 +13,9 @@ Event::~Event() {
 void Event::CalculateAngles(double SD1SD2_Z, double SD1CRY_Z, double CRYSD3_Z) {
     if (pos_.size() < 6) {
         std::cerr << "Errore: pos_ contiene meno di 6 elementi, impossibile calcolare angoli.\n";
-        return; // oppure lancia un'eccezione o gestisci diversamente
+        return;
     }
-    double thetax_in = std::atan((pos_[2] - pos_[0]) / SD1SD2_Z) * 1000.0;
+    double thetax_in = std::atan((pos_[2] - pos_[0]) / SD1SD2_Z) * 1000.0; //mrad
     double thetay_in = std::atan((pos_[3] - pos_[1]) / SD1SD2_Z) * 1000.0;
 
     SetThetain(thetax_in, thetay_in);
