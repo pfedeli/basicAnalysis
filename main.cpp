@@ -8,6 +8,7 @@
 
 int main(int argc, char** argv)
 {
+
     if (argc < 2) {
         std::cerr << "Uso: " << argv[0] << " config.txt" << std::endl;
         return 1;
@@ -29,8 +30,11 @@ int main(int argc, char** argv)
     }
 
     std::vector<std::string> run_ids = config.GetStringList("run_list", ',');
-    myhists.Save(run_ids[0]);
+    if(config.GetInt("save")){
+        myhists.Save(run_ids[0]);
+    }
     myhists.Draw();
+    myhists.UpdateCanvas();
     app.Run();
 
     return 0;

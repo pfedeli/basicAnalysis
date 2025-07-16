@@ -31,4 +31,6 @@ void Event::CalculateAngles(double SD1SD2_Z, double SD1CRY_Z, double CRYSD3_Z) {
     SetThetaout(thetax_out, thetay_out);
 }
 
-
+void Event::CalibrateToGev(int idx, double m, double q) {
+    energy_ = PH_.at(idx)*m+q;
+}

@@ -46,10 +46,10 @@ private:
     TH2F *hEffden_ = new TH2F("hEffden", "Efficacia denominatore", 200, -15, 40, 200, -40, 70);
 
     TCanvas *cQtot_ = new TCanvas("cQtot", "cQtot");
-    TH1F *hQtot_ = new TH1F("Qtot0", "", 100, 0, 20000);
+    TH1F *hQtot_ = new TH1F("Qtot0", "", 50, 0, 30000);
 
     TCanvas *cnclu_ = new TCanvas("cnclu", "cnclu");
-    TH1F *hnclu_ = new TH1F("nclu0", "", 20, 0, 20);
+    TH1F *hnclu_ = new TH1F("nclu0", "", 25, 0, 25);
 };
 
 #endif

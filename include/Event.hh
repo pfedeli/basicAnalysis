@@ -66,7 +66,7 @@ public:
 
     // functions
     void CalculateAngles(double SD1SD2_Z, double SD1CRY_Z, double CRYSD3_Z);
-
+    void CalibrateToGev(int idx, double m, double q);
 private:
     std::vector<double> pos_;           // silicon dec position
     std::vector<int> nclu_;             // clusters on silicon det
@@ -76,6 +76,7 @@ private:
     std::vector<int> PH_;               // waform pulse height digi
     std::vector<double> infogonio_;     // goniometer info
     std::vector<std::string> infoplus_; // other info
+    double energy_=-1;
 
     // inferred quantities
     double xcry_;

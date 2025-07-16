@@ -45,6 +45,8 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
     double SD1ycorr = config.GetDouble("SD1ycorr");
     double SD3xcorr = config.GetDouble("SD3xcorr");
     double SD3ycorr = config.GetDouble("SD3ycorr");
+    double m = config.GetDouble("m");
+    double q = config.GetDouble("q");
 
     if (debug)
     {
@@ -125,6 +127,7 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
         evt.SetBaseline(baseline);
         evt.SetTimes(times);
         evt.SetPH(ph);
+
         if (debug){
             std::cout << "baseline: ";
             for(int i = 0; i < ndigi; ++i){
@@ -165,7 +168,10 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
             }
             std::cout << std::endl;
         }
+        
         evt.CalculateAngles(SD1SD2_Z, SD1CRY_Z, CRYSD3_Z);
+        evt.CalibrateToGev(2, m, q);
+
         if (debug)
         {
             std::cout << " ThetaDeflection=" << evt.GetThetaDeflection()

@@ -2,6 +2,7 @@
 #include <TFile.h>
 #include <TH1.h>
 #include <TCanvas.h>
+#include <iostream>
 
 Histograms::Histograms() {}
 Histograms::~Histograms() {}
@@ -87,7 +88,7 @@ void Histograms::Fill(const Event& ev) {
 void Histograms::Save(const std::string& runidname) {
     std::string filename = "/home/pierluigi/Analysis/epiboost/data2/Run" + runidname + ".root";
     TFile f(filename.c_str(), "recreate");
-    hQtot_->Write(("cQtot" + runidname).c_str());
+    hQtot_->Write(("hqtot" + runidname).c_str());
     hnclu_->Write(("hnclu" + runidname).c_str());
     f.Close();
 }
