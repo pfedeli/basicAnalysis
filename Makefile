@@ -9,20 +9,30 @@ SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
 
-# File sorgenti (includiamo main.cpp separatamente)
-SOURCES = $(wildcard $(SRC_DIR)/*.cc) main.cpp
-OBJECTS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(filter %.cpp, $(SOURCES))) \
-          $(patsubst $(SRC_DIR)/%.cc, $(OBJ_DIR)/%.o, $(filter %.cc, $(SOURCES)))
+# Sorgenti comuni
+COMMON_SOURCES = $(wildcard $(SRC_DIR)/*.cc)
+COMMON_OBJECTS = $(patsubst $(SRC_DIR)/%.cc, $(OBJ_DIR)/%.o, $(COMMON_SOURCES))
 
-EXECUTABLE = $(BIN_DIR)/main
+# Eseguibili e relativi sorgenti
+EXECUTABLES = $(BIN_DIR)/main $(BIN_DIR)/align
 
-# Regole
-all: $(EXECUTABLE)
+MAIN_SOURCE = main.cpp
+ALIGN_SOURCE = align.cpp
 
-$(EXECUTABLE): $(OBJECTS)
+MAIN_OBJECT = $(OBJ_DIR)/main.o
+ALIGN_OBJECT = $(OBJ_DIR)/align.o
+
+all: $(EXECUTABLES)
+
+$(BIN_DIR)/main: $(MAIN_OBJECT) $(COMMON_OBJECTS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
 
+$(BIN_DIR)/align: $(ALIGN_OBJECT) $(COMMON_OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
+
+# Regole di compilazione
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
