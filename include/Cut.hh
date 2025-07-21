@@ -26,6 +26,9 @@ public:
     }
 
 private:
+
+    bool cutflag_;
+
     double cut_x1_, cut_x2_;
     bool cut_x_active_;
 

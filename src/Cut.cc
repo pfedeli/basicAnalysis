@@ -2,7 +2,7 @@
 #include <iostream>
 
 Cut::Cut()
-    : cut_x1_(0), cut_x2_(10), cut_x_active_(false),
+    : cutflag_(false), cut_x1_(0), cut_x2_(10), cut_x_active_(false),
       cut_y1_(0), cut_y2_(10), cut_y_active_(false),
       ene_cut_(0), ene_cut_active_(false),
       theta_crit_(100), theta_crit_active_(false),
@@ -19,6 +19,7 @@ bool Cut::LoadFromConfig(const std::string& configPath)
         std::cerr << "[Cut::LoadFromConfig] Errore nel caricamento del file config: " << configPath << std::endl;
         return false;
     }
+    cutflag_ = config.GetInt("cutflag");
 
     if (config.HasKey("cut_x1") && config.HasKey("cut_x2")) {
         cut_x1_ = config.GetDouble("cut_x1");
@@ -62,6 +63,11 @@ bool Cut::LoadFromConfig(const std::string& configPath)
 bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
                     int eneLG, double theta, double CHtime, double LGtime) const
 {
+    if(!cutflag_){
+        //std::cout << "no cut applied" << std::endl;
+        return true;
+    }
+
     bool poscuts = true;
     bool CHenecuts = true;
     bool singleclucut = true;

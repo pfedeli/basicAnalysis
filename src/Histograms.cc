@@ -3,11 +3,13 @@
 #include <TH1.h>
 #include <TCanvas.h>
 #include <iostream>
+#include <TStyle.h>
 
 Histograms::Histograms() {}
 Histograms::~Histograms() {}
 
 void Histograms::Draw() {
+    TCanvas* cSDSs_ = new TCanvas("cSDS", "cSDS");
     cSDSs_->Divide(3,3);
     cSDSs_->cd(1);
     hSD1_->GetXaxis()->SetTitle("X[cm]");
@@ -40,31 +42,35 @@ void Histograms::Draw() {
     hSD3_projY_ = hSD3_->ProjectionY();
     hSD3_projY_->Draw("hist");
 
+    TCanvas *cAngles_ = new TCanvas("cAngles", "cAngles");
+    gStyle->SetOptFit(1111);
     cAngles_->cd();
     cAngles_->Divide(3,2);
     cAngles_->cd(1);
     hhTheta_->GetXaxis()->SetTitle("incoming X angle [mrad]");
-    hhTheta_->Draw();
+    hhTheta_->Fit("gaus");
     cAngles_->cd(2);
     hhthetaout_->GetXaxis()->SetTitle("outgoing X angle [mrad]");
-    hhthetaout_->Draw();
+    hhthetaout_->Fit("gaus");
     cAngles_->cd(3);
     hhthetadiff_->GetXaxis()->SetTitle("deflection X angle [mrad]");
-    hhthetadiff_->Draw();
+    hhthetadiff_->Fit("gaus");
     cAngles_->cd(4);
     hvTheta_->GetXaxis()->SetTitle("incoming Y angle [mrad]");
-    hvTheta_->Draw();
+    hvTheta_->Fit("gaus");
     cAngles_->cd(5);
     hvthetaout_->GetXaxis()->SetTitle("outgoing Y angle [mrad]");
-    hvthetaout_->Draw();
+    hvthetaout_->Fit("gaus");
     cAngles_->cd(6);
     hvthetadiff_->GetXaxis()->SetTitle("deflection Y angle [mrad]");
-    hvthetadiff_->Draw();
-
+    hvthetadiff_->Fit("gaus");
+    
+    TCanvas *cQtot_ = new TCanvas("cQtot", "cQtot");
     cQtot_->cd();
     hQtot_->GetXaxis()->SetTitle("Charge on SD3 [ADC]");
     hQtot_->Draw();
 
+    TCanvas *cnclu_ = new TCanvas("cnclu", "cnclu");
     cnclu_->cd();
     hnclu_->GetXaxis()->SetTitle("Ncluster on SD3 [ADC]");
     hnclu_->Draw();
@@ -86,8 +92,11 @@ void Histograms::Fill(const Event& ev) {
 }
 
 void Histograms::Save(const std::string& runidname) {
-    std::string filename = "/home/pierluigi/Analysis/epiboost/data2/Run" + runidname + ".root";
+    std::string filename = "data/Run" + runidname + ".root";
     TFile f(filename.c_str(), "recreate");
+    hSD1_->Write(("hSD1" + runidname).c_str());
+    hSD2_->Write(("hSD2" + runidname).c_str());
+    hSD3_->Write(("hSD3" + runidname).c_str());
     hQtot_->Write(("hqtot" + runidname).c_str());
     hnclu_->Write(("hnclu" + runidname).c_str());
     f.Close();
