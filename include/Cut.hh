@@ -11,8 +11,9 @@ public:
 
     bool LoadFromConfig(const std::string& configPath);
 
-    bool PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
-                   int eneLG, double theta, double CHtime, double LGtime) const;
+    bool PassedCut(double x, double y, int nclusx, int nclusy,
+                    double theta) const;
+                    
     double GetCutVal(const std::string& val) const {
         if (val == "timecut") return timecut_;
         if (val == "theta_crit") return theta_crit_;

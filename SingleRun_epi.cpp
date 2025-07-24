@@ -29,14 +29,13 @@
 
 namespace fs = std::filesystem;
 
-const double SD1SD2_Z = 330.0, SD1CRY_Z = 383.2, CRYSD3_Z = 626, SD2SD3_Z = 679.2; // cm
+const double SD1SD2_Z = 330.0, SD1CRY_Z = 383.2, CRYSD3_Z = 10.7, SD2SD3_Z = 66.8; // cm
 // const double SD1SD2_Z = 330.0, SD1CRY_Z = 383.2, CRYSD3_Z = 10.7, SD2SD3_Z = 6.8;
 const int nstrips = 8, nqtot = 4, nclu = 4, ndigi = 8, ngonio = 5, ninfoplus = 2;
-const double cut_x1 = 4.4, cut_x2 = 5.1, cut_y1 = 6.9, cut_y2 = 7.5, ene_cut = 20, cut_eneLG = 20, theta_crit = 0.785; //0.793 @2.86
+const double cut_x1 = 4.5, cut_x2 = 5, cut_y1 = 7, cut_y2 = 7.5, ene_cut = 20, cut_eneLG = 20, theta_crit = 0.787; // 0.787 @2.86//0.544 @6gev
 
 const double align_SD1x = 0.107, align_SD1y = -2.21; // to align at sd2 sd1-align_sd1
-// const double align_SD3x = 0.484, align_SD3y = -2.053; // to align at sd2 sd3-align_sd
-const double align_SD3x = 1.125, align_SD3y = -2.797; // to align at sd2 sd3-align_sd
+const double align_SD3x = 0.484, align_SD3y = -2.053; // to align at sd2 sd3-align_sd 
 
 int tot_evt = 0;
 
@@ -57,10 +56,10 @@ bool FillSpill(const std::string &line, SpillData &Spill)
 {
     std::istringstream iss(line);
     for (int i = 0; i < nstrips; ++i)
-        if (!(iss >> Spill.pos_[i]))
+        if (!(iss >> Spill.pos[i]))
             return false;
     for (int i = 0; i < nclu; ++i)
-        if (!(iss >> Spill.nclu_[i]))
+        if (!(iss >> Spill.nclustrip[i]))
             return false;
     for (int i = 0; i < nqtot; ++i)
         if (!(iss >> Spill.qtot[i]))
@@ -85,22 +84,28 @@ bool FillSpill(const std::string &line, SpillData &Spill)
     return true;
 }
 
-//thcut only for axial
+// thcut only for axial
 bool set_cuts(double x, double y, double eneCH, int nclusx, int nclusy, int eneLG, double theta, double CHtime, double LGtime)
 {
     bool am = false;
+    bool alignemnt = false;
 
     bool poscuts = (x > cut_x1 && x < cut_x2 && y > cut_y1 && y < cut_y2);
-    bool CHenecuts = eneCH > ene_cut;
-    bool clucut = nclusx == 1 && nclusy ==1;
-    bool ENELG = eneLG > cut_eneLG;
+    bool CHenecuts = eneCH > 20;
+    bool clucut = nclusx > 0;
+    bool ENELG = eneLG > 20;
     bool timecut = (LGtime - CHtime) < 40 && (LGtime - CHtime) > 0;
-    bool thcut = (theta < 2* theta_crit) && (theta > -2*theta_crit);
+    bool thcut = (theta < 1 * theta_crit);
 
-    if(am){
-        return(poscuts && CHenecuts && clucut && timecut);
+    if (alignemnt)
+    {
+        return true;
     }
-    return (poscuts && CHenecuts && clucut && timecut && thcut);
+    if (am)
+    {
+        return (poscuts && CHenecuts && timecut && eneLG);
+    }
+    return (poscuts && CHenecuts && timecut && thcut && ENELG);
 };
 
 int main(int argc, char *argv[])
@@ -113,15 +118,16 @@ int main(int argc, char *argv[])
     std::ifstream filelist;
     std::vector<std::string> run_number;
 
-    TH1F *hhTheta = new TH1F("hhTheta", "Orizontal theta in", 200, -10, 10);
-    TH1F *hvTheta = new TH1F("hvTheta", "Vertical thata in", 200, -10, 10);
+    TH1F *hhTheta = new TH1F("hhTheta", "Orizontal theta in", 200, -20, 20);
+    TH1F *hvTheta = new TH1F("hvTheta", "Vertical thata in", 200, -20, 20);
     TH2F *hSDs[nstrips / 2];
     TH1F *hQtot[nqtot];
-    TH1I *hdigiene[ndigi], *hdigitime[ndigi], *hdigipede[ndigi], *hNclu[nclu];
-    TH1F *hhthetadiff = new TH1F("hhthetadiff", "horizontal deflection", 100, -10, 10);
-    TH1F *hvthetadiff = new TH1F("hvthetadiff", "vertical deflection", 100, -10, 10);
-    TH1F *hhthetaout = new TH1F("hhthetaout", "horizontal theta out", 200, -10, 10);
-    TH1F *hvthetaout = new TH1F("hvthetaout", "vertical theta out", 200, -10, 10);
+    TH1I *hdigiene[ndigi], *hdigitime[ndigi], *hdigipede[ndigi];
+    TH1F *hNclu[nclu];
+    TH1F *hhthetadiff = new TH1F("hhthetadiff", "horizontal deflection", 100, -20, 20);
+    TH1F *hvthetadiff = new TH1F("hvthetadiff", "vertical deflection", 100, -20, 20);
+    TH1F *hhthetaout = new TH1F("hhthetaout", "horizontal theta out", 200, -20, 20);
+    TH1F *hvthetaout = new TH1F("hvthetaout", "vertical theta out", 200, -20, 20);
     TH2F *hhBruco = new TH2F("hhBruco", "LG PH vs ROT - theta_x in", 200, -15, 40, 200, 0, 5000);
     TH2F *hvBruco = new TH2F("hvBruco", "LG PH vs CRADDLE - theta_y in", 200, -40, 70, 200, 0, 5000);
     TH2F *hthetaxBruco = new TH2F("hthetaxBruco", "deflection x vs theta_x in", 200, -15, 40, 500, 0, 50);
@@ -137,7 +143,6 @@ int main(int argc, char *argv[])
     TH1F *hTimediff = new TH1F("hTimediff", "hTimediff", 200, -200, 1000);
     TProfile2D *pdeflxy = new TProfile2D("pdeflxy", "Deflession x and y", 200, -10, 10, 200, -10, 10);
     TH2F *hdeflxy = new TH2F("hdeflxy", "Deflession x and y", 200, -10, 10, 200, -10, 10);
-
     for (int a = 0; a < ndigi; a++)
     {
         hdigiene[a] = new TH1I(Form("ch_%d_ene", a), "", 200, 0, 2000);
@@ -152,12 +157,12 @@ int main(int argc, char *argv[])
 
     for (int a = 0; a < nqtot; a++)
     {
-        hQtot[a] = new TH1F(Form("Qtot%d", a), "", 100, 0, 50000);
+        hQtot[a] = new TH1F(Form("Qtot%d", a), "", 60, 0, 30000);
     }
 
     for (int a = 0; a < nclu; a++)
     {
-        hNclu[a] = new TH1I(Form("nclu%d", a), Form("nclu %d", a), 25, 0, 25);
+        hNclu[a] = new TH1F(Form("nclu%d", a), Form("nclu %d", a), 25, 0, 25);
     }
 
     // variable
@@ -230,7 +235,7 @@ int main(int argc, char *argv[])
 
                     double htheta_diff = htheta_out - hTheta;
                     double vtheta_diff = vtheta_out - vTheta;
-                    double theta_diff = sqrt(hTheta*hTheta + vTheta*vTheta);
+                    double theta_diff = sqrt(hTheta * hTheta + vTheta * vTheta);
                     temp_rot = sp.goniometro[0];
                     temp_craddle = sp.goniometro[1];
                     hEffden->Fill(sp.goniometro[0] / 1000 - htheta_diff, sp.goniometro[1] / 1000 - vtheta_diff);
@@ -239,7 +244,7 @@ int main(int argc, char *argv[])
                         hEffnum->Fill(sp.goniometro[0] / 1000 - htheta_diff, sp.goniometro[1] / 1000 - vtheta_diff);
                     }
 
-                    if (set_cuts(xcry, ycry, sp.pulse_height[0], sp.nclustrip[0],sp.nclustrip[1], sp.pulse_height[2], theta_diff, sp.times[0], sp.times[2]))
+                    if (set_cuts(xcry, ycry, sp.pulse_height[0], sp.nclustrip[0], sp.nclustrip[1], sp.pulse_height[2], theta_diff, sp.times[0], sp.times[2]))
                     {
                         Spills.push_back(sp);
                         for (int a = 0; a < nstrips; a += 2)
@@ -430,7 +435,7 @@ int main(int argc, char *argv[])
     hhthetadiff->GetXaxis()->SetTitle("#thetax deflection [mrad]");
     c7->cd(4);
     hvTheta->Fit("gaus", "q");
-    hhTheta->GetXaxis()->SetTitle("#thetay in [mrad]");
+    hvTheta->GetXaxis()->SetTitle("#thetay in [mrad]");
     c7->cd(5);
     hvthetaout->Fit("gaus", "q");
     hvthetaout->GetXaxis()->SetTitle("#thetay out [mrad]");
@@ -443,22 +448,34 @@ int main(int argc, char *argv[])
     c8->cd(1);
     hSDs[2]->Draw("colz");
     c8->cd(2);
-    hSDs[2]->ProjectionY()->Fit("gaus", "q");
-    hSDs[2]->ProjectionY()->Draw("hist");
-    c8->cd(3);
     hSDs[2]->ProjectionX()->Fit("gaus", "q");
     hSDs[2]->ProjectionX()->Draw("hist");
+    c8->cd(3);
+    hSDs[2]->ProjectionY()->Fit("gaus", "q");
+    hSDs[2]->ProjectionY()->Draw("hist");
 
     auto c9 = new TCanvas("c9", "c9");
     hdeflxy->Draw("colz");
 
-    std::string filename = "data/Run" + run_number[0] + ".root";
+    auto c10 = new TCanvas("c10", "c10");
+    c10->Divide(2, 2);
+    c10->cd(1);
+    hNclu[0]->Draw();
+    c10->cd(2);
+    hNclu[1]->Draw();
+    c10->cd(3);
+    hQtot[0]->Draw();
+    c10->cd(4);
+    hQtot[1]->Draw();
+    std::string filename = "data/tcRun" + run_number[0] + ".root";
     TFile f2(filename.c_str(), "recreate");
     hhthetadiff->Write(("hdefl" + run_number[0]).c_str());
     hvthetadiff->Write(("vdefl" + run_number[0]).c_str());
     hSDs[2]->Write(("sd3_pos" + run_number[0]).c_str());
     hdeflxy->Write(("hdeflxy" + run_number[0]).c_str());
     pdeflxy->Write(("pdeflxy" + run_number[0]).c_str());
+    hQtot[0]->Write(("hqtot" + run_number[0]).c_str());
+    hNclu[0]->Write(("hnclu" + run_number[0]).c_str());
 
     f2.Close();
     app.Run();

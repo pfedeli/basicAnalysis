@@ -60,8 +60,7 @@ bool Cut::LoadFromConfig(const std::string& configPath)
     return true;
 }
 
-bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
-                    int eneLG, double theta, double CHtime, double LGtime) const
+bool Cut::PassedCut(double x, double y, int nclusx, int nclusy, double theta) const
 {
     if(!cutflag_){
         //std::cout << "no cut applied" << std::endl;
@@ -69,26 +68,17 @@ bool Cut::PassesCut(double x, double y, double eneCH, int nclusx, int nclusy,
     }
 
     bool poscuts = true;
-    bool CHenecuts = true;
     bool singleclucut = true;
-    bool ENELG = true;
-    bool timecut = true;
     bool thcut = true;
 
     if (cut_x_active_)
         poscuts = (x > cut_x1_ && x < cut_x2_);
     if (cut_y_active_)
         poscuts = poscuts && (y > cut_y1_ && y < cut_y2_);
-    if (ene_cut_active_)
-        CHenecuts = (eneCH >= ene_cut_);
-    if (cut_eneLG_active_)
-        ENELG = (eneLG > cut_eneLG_);
     if (theta_crit_active_)
         thcut = (theta < 1 * theta_crit_) && (theta > -1 * theta_crit_);
     if (clucut_active_)
         singleclucut = (nclusx == 1 && nclusy == 1);
-    if (timecut_active_)
-        timecut = (LGtime - CHtime) < timecut_ && (LGtime - CHtime) > 0;
     
-    return (poscuts && CHenecuts && singleclucut && timecut && thcut && ENELG);
+    return (poscuts  && singleclucut && thcut);
 }

@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 
     if (argc < 2)
     {
-        std::cerr << "Uso: " << argv[0] << " config.txt" << std::endl;
+        std::cerr << "Uso: " << argv[0] << " align.conf" << std::endl;
         return 1;
     }
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         std::cerr << "Errore: impossibile caricare il file di configurazione.\n";
         return false;
     }
-
+    double dist = config.GetDouble("SD1CRY_Z");
     std::vector<std::string> run_ids = config.GetStringList("run_list", ',');
     if (config.GetInt("save"))
     {
@@ -63,15 +63,18 @@ int main(int argc, char **argv)
     TH1F *hvtheta = dynamic_cast<TH1F *>(myhists.GetHist("hvTheta"));
 
     std::cout << "****************************************************************" << std::endl;
-    std::cout << "alignment SD1x: " << hSD1_projX->GetMean()- hSD2_projX->GetMean() << std::endl 
-              << "alignment SD1y: " << hSD1_projY->GetMean()- hSD2_projY->GetMean() << std::endl
-              << "alignment SD3x: " << hSD3_projX->GetMean()- hSD2_projX->GetMean() << std::endl
-              << "alignment SD3x: " << hSD3_projY->GetMean()- hSD2_projY->GetMean() << std::endl;
+    std::cout << "SD1xcorr=" << hSD1_projX->GetMean() << std::endl 
+              << "SD1ycorr=" << hSD1_projY->GetMean() << std::endl
+              << "SD2xcorr=" << hSD2_projX->GetMean() << std::endl 
+              << "SD2ycorr=" << hSD2_projY->GetMean() << std::endl
+              << "SD3xcorr=" << hSD3_projX->GetMean() << std::endl
+              << "SD3ycorr=" << hSD3_projY->GetMean() << std::endl;
     std::cout << "****************************************************************" << std::endl;
     std::cout << "beam divergence X: " << hhtheta->GetFunction("gaus")->GetParameter(2) << "mrad" << std::endl
               << "beam divergence Y: " << hvtheta->GetFunction("gaus")->GetParameter(2) << "mrad" << std::endl;
     std::cout << "****************************************************************" << std::endl;
-
+    std::cout << "beam divergence at crystal X: " << hhtheta->GetFunction("gaus")->GetParameter(2)/100*dist << "mm" << std::endl
+              << "beam divergence at crystal Y: " << hvtheta->GetFunction("gaus")->GetParameter(2)/100*dist << "mm" << std::endl;
     app.Run();
 
     return 0;

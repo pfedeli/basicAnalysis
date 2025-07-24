@@ -59,7 +59,10 @@
         "filesystem": "cpp",
         "list": "cpp",
         "unordered_set": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "todelete.C": "cpp",
+        "Analysis.C": "cpp",
+        "runAnalysis.C": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false,
     "C_Cpp.errorSquiggles": "enabled"

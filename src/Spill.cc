@@ -43,6 +43,8 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
     double CRYSD3_Z = config.GetDouble("CRYSD3_Z");
     double SD1xcorr = config.GetDouble("SD1xcorr");
     double SD1ycorr = config.GetDouble("SD1ycorr");
+    double SD2xcorr = config.GetDouble("SD2xcorr");
+    double SD2ycorr = config.GetDouble("SD2ycorr");
     double SD3xcorr = config.GetDouble("SD3xcorr");
     double SD3ycorr = config.GetDouble("SD3ycorr");
     double m = config.GetDouble("m");
@@ -83,6 +85,8 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
             iss >> pos[i];
         pos[0]-=SD1xcorr;
         pos[1]-=SD1ycorr;
+        pos[2]-=SD2xcorr;
+        pos[3]-=SD2ycorr;
         pos[4]-=SD3xcorr;
         pos[5]-=SD3ycorr;
 
@@ -170,16 +174,16 @@ bool Spill::LoadFromASCII(const std::string &fileSpill, const std::string &confi
         }
         
         evt.CalculateAngles(SD1SD2_Z, SD1CRY_Z, CRYSD3_Z);
-        evt.CalibrateToGev(2, m, q);
-
+        if(ndigi>2){
+            evt.CalibrateToGev(2, m, q);
+        }
         if (debug)
         {
             std::cout << " ThetaDeflection=" << evt.GetThetaDeflection()
                       << ", Xcry=" << evt.GetXcry() << ", Ycry=" << evt.GetYcry() << std::endl;
         }
 
-        if (cut.PassesCut(evt.GetXcry(), evt.GetYcry(), evt.GetPH()[0], evt.Getnclu()[0], evt.Getnclu()[1],
-                          evt.GetPH()[2], evt.GetThetaIn(), evt.Gettimes()[0], evt.Gettimes()[2]))
+        if (cut.PassedCut(evt.GetXcry(), evt.GetYcry(), evt.Getnclu()[0], evt.Getnclu()[1], evt.GetThetaIn()))
         {
             spill_.push_back(evt);
             hist.Fill(evt);

@@ -2,28 +2,35 @@
 CXX = g++
 ROOTCFLAGS := $(shell root-config --cflags)
 ROOTLIBS   := $(shell root-config --libs)
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude $(ROOTCFLAGS)
+CXXFLAGS = -std=c++17 -Wall -Wextra -fPIC -Iinclude $(ROOTCFLAGS)
 
 # Cartelle
 SRC_DIR = src
 OBJ_DIR = obj
 BIN_DIR = bin
+LIB_DIR = lib
 
 # Sorgenti comuni
 COMMON_SOURCES = $(wildcard $(SRC_DIR)/*.cc)
 COMMON_OBJECTS = $(patsubst $(SRC_DIR)/%.cc, $(OBJ_DIR)/%.o, $(COMMON_SOURCES))
 
 # Eseguibili e relativi sorgenti
-EXECUTABLES = $(BIN_DIR)/main $(BIN_DIR)/align
+EXECUTABLES = $(BIN_DIR)/main $(BIN_DIR)/align $(BIN_DIR)/analysis
 
 MAIN_SOURCE = main.cpp
 ALIGN_SOURCE = align.cpp
+ANALYSIS_SOURCE = analysis.cpp
 
 MAIN_OBJECT = $(OBJ_DIR)/main.o
 ALIGN_OBJECT = $(OBJ_DIR)/align.o
+ANALYSIS_OBJECT = $(OBJ_DIR)/analysis.o
 
-all: $(EXECUTABLES)
+# Libreria condivisa
+LIBRARY = $(LIB_DIR)/libAnalysis.so
 
+all: $(EXECUTABLES) $(LIBRARY)
+
+# Regole per gli eseguibili
 $(BIN_DIR)/main: $(MAIN_OBJECT) $(COMMON_OBJECTS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
@@ -31,6 +38,15 @@ $(BIN_DIR)/main: $(MAIN_OBJECT) $(COMMON_OBJECTS)
 $(BIN_DIR)/align: $(ALIGN_OBJECT) $(COMMON_OBJECTS)
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
+
+$(BIN_DIR)/analysis: $(ANALYSIS_OBJECT) $(COMMON_OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
+
+# Regola per la libreria condivisa
+$(LIBRARY): $(COMMON_OBJECTS)
+	@mkdir -p $(LIB_DIR)
+	$(CXX) -shared -o $@ $^ $(ROOTLIBS)
 
 # Regole di compilazione
 $(OBJ_DIR)/%.o: %.cpp
@@ -42,6 +58,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR)
 
 .PHONY: all clean
